@@ -1,7 +1,11 @@
 package dev.troyer;
 
+import ai.onnxruntime.OnnxTensor;
+import ai.onnxruntime.OrtEnvironment;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        OrtEnvironment env = OrtEnvironment.getEnvironment();
+        System.out.println("Probably setup env");
     }
 }
