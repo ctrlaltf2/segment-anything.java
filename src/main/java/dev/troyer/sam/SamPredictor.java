@@ -1,4 +1,4 @@
-package dev.troyer;
+package dev.troyer.sam;
 
 import dev.troyer.SamDecoder;
 import dev.troyer.SamEncoder;

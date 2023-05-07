@@ -1,4 +1,4 @@
-package dev.troyer;
+package dev.troyer.sam;
 
 import ai.onnxruntime.OnnxTensor;
 import ai.onnxruntime.OrtEnvironment;
