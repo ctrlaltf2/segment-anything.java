@@ -5,10 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="048ed98d-d3ac-48d9-96b8-47d4c2038a19" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/dev/troyer/SamDecoder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/dev/troyer/SamEncoder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/dev/troyer/SamPredictor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/dev/troyer/sam/SamEncoder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dev/troyer/sam/SamEncoder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/dev/troyer/sam/SamPredictor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dev/troyer/sam/SamPredictor.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,7 +43,8 @@
     "ASKED_ADD_EXTERNAL_FILES": "true",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+    "last_opened_file_path": "/home/caleb/git-repos/sam-java",
+    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle"
   }
 }]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />

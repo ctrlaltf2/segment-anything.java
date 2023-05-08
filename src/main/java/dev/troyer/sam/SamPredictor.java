@@ -1,7 +1,7 @@
 package dev.troyer.sam;
 
-import dev.troyer.SamDecoder;
-import dev.troyer.SamEncoder;
+import dev.troyer.sam.SamDecoder;
+import dev.troyer.sam.SamEncoder;
 
 import ai.onnxruntime.OrtSession;
 
