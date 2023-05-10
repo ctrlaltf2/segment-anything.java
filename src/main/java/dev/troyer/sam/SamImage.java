@@ -17,8 +17,19 @@ import org.nd4j.enums.ImageResizeMethod;
 class SamImage {
     /**
      * Underlying data for the image, post-transform
+     * Shape (num in batch == 1, height == 1024, width == 1024, num channels == 3)
      */
-    private final INDArray data;
+    private final double[][][][] data;
+
+    /**
+     * Original height, px
+     */
+    public final int original_height;
+
+    /**
+     * Original width, px
+     */
+    public final int original_width;
 
     /*
     /**
@@ -27,7 +38,7 @@ class SamImage {
      * @param img_path Path to the image file
     public SamImage(Path img_path) {
         // Load into a buffered image
-
+    
         BufferedImage image = null;
         try {
             // Read the image file from disk into a BufferedImage
@@ -36,7 +47,7 @@ class SamImage {
             System.out.println("Error reading image file: " + e.getMessage());
             throw e;
         }
-
+    
         this(image);
     }
     */
@@ -98,10 +109,28 @@ class SamImage {
         });
 
         INDArray padded = Nd4j.image.pad(resized, padding, Mode.CONSTANT, 0.0);
-        this.data = padded;
+
+        assert padded.shape()[0] == 1;
+        assert padded.shape()[1] == 1024;
+        assert padded.shape()[2] == 1024;
+        assert padded.shape()[3] == 3;
+
+        // and into a double array you go (cursed way because NDArray cannot export 4D matrices apparently)
+        data = new double[1][1024][1024][3];
+
+        for (int i = 0; i < 1024; i++)
+            for (int j = 0; j < 1024; j++)
+                for (int k = 0; k < 3; k++)
+                    this.data[0][i][j][k] = padded.getDouble(0, i, j, k);
+
+        this.original_height = img.getHeight();
+        this.original_width = img.getWidth();
     }
 
-    public INDArray asNDArray() {
+    /**
+     * Get the data for the image, post transfom and ready for encoding
+     */
+    public double[][][][] post_transform() {
         return this.data;
     }
 
