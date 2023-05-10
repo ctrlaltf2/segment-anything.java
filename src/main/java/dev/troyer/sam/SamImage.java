@@ -3,9 +3,11 @@ package dev.troyer.sam;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import javax.imageio.ImageIO;
-import java.util.Arrays;
+
+import ai.onnxruntime.OnnxTensor;
+import ai.onnxruntime.OrtEnvironment;
+import ai.onnxruntime.OrtException;
 
 import org.nd4j.linalg.api.buffer.DataType;
 import org.nd4j.linalg.api.ndarray.INDArray;
@@ -17,9 +19,9 @@ import org.nd4j.enums.ImageResizeMethod;
 class SamImage {
     /**
      * Underlying data for the image, post-transform
-     * Shape (num in batch == 1, height == 1024, width == 1024, num channels == 3)
+     * Shape (num in batch == 1, num channels == 3, height == 1024, width == 1024)
      */
-    private final double[][][][] data;
+    private final float[][][][] data;
 
     /**
      * Original height, px
@@ -30,27 +32,6 @@ class SamImage {
      * Original width, px
      */
     public final int original_width;
-
-    /*
-    /**
-     * Image from Path
-     *
-     * @param img_path Path to the image file
-    public SamImage(Path img_path) {
-        // Load into a buffered image
-    
-        BufferedImage image = null;
-        try {
-            // Read the image file from disk into a BufferedImage
-            image = ImageIO.read(img_path.toFile());
-        } catch (IOException e) {
-            System.out.println("Error reading image file: " + e.getMessage());
-            throw e;
-        }
-    
-        this(image);
-    }
-    */
 
     /**
      * Image from BufferedImage
@@ -116,12 +97,12 @@ class SamImage {
         assert padded.shape()[3] == 3;
 
         // and into a double array you go (cursed way because NDArray cannot export 4D matrices apparently)
-        data = new double[1][1024][1024][3];
+        data = new float[1][3][1024][1024];
 
         for (int i = 0; i < 1024; i++)
             for (int j = 0; j < 1024; j++)
                 for (int k = 0; k < 3; k++)
-                    this.data[0][i][j][k] = padded.getDouble(0, i, j, k);
+                    this.data[0][k][i][j] = (float) padded.getDouble(0, i, j, k);
 
         this.original_height = img.getHeight();
         this.original_width = img.getWidth();
@@ -130,37 +111,7 @@ class SamImage {
     /**
      * Get the data for the image, post transfom and ready for encoding
      */
-    public double[][][][] post_transform() {
-        return this.data;
-    }
-
-    private void dump(INDArray imageTensor, String filePath) {
-        int height = (int) imageTensor.shape()[1];
-        int width = (int) imageTensor.shape()[2];
-
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                int r = (int) (imageTensor.getDouble(0, y, x, 0));
-                int g = (int) (imageTensor.getDouble(0, y, x, 1));
-                int b = (int) (imageTensor.getDouble(0, y, x, 2));
-
-                r = Math.max(0, Math.min(r, 255));
-                g = Math.max(0, Math.min(g, 255));
-                b = Math.max(0, Math.min(b, 255));
-
-                int rgb = (r << 16) | (g << 8) | b;
-                image.setRGB(x, y, rgb);
-            }
-        }
-
-        try {
-            String format = filePath.substring(filePath.lastIndexOf(".") + 1);
-            ImageIO.write(image, format, new File(filePath));
-        } catch (IOException e) {
-            System.err.println("Error: Unable to save the image.");
-            e.printStackTrace();
-        }
+    public OnnxTensor asTensor(OrtEnvironment env) throws OrtException {
+        return OnnxTensor.createTensor(env, data);
     }
 }
