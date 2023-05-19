@@ -7,6 +7,7 @@ Eventual goal is to use this in a [JOSM](https://josm.openstreetmap.de/) [plugin
  - [x] Reproduce ONNX export of encoder and decoder (ref: https://github.com/visheratin/segment-anything)
  - [x] Image loading and preprocessing
  - [x] Encoder forward pass
+ - [ ] OnnxTensor to primitive matrix type conversion (weirdly hard?)
  - [ ] Decoder forward pass, basic coordinate-based prompt
  - [ ] Decoder mask post-processing (mapping back to the input image)
  - [ ] Decoder, implement remaining prompt types
