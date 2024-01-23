@@ -37,6 +37,9 @@ class SamImage {
      * Image from BufferedImage
      */
     public SamImage(BufferedImage img) {
+        this.original_height = img.getHeight();
+        this.original_width = img.getWidth();
+
         // TODO: support 16-bit images?
         int[] pixels = img.getRGB(0, 0, img.getWidth(), img.getHeight(), null, 0, img.getWidth());
 
@@ -103,9 +106,6 @@ class SamImage {
             for (int j = 0; j < 1024; j++)
                 for (int k = 0; k < 3; k++)
                     this.data[0][k][i][j] = (float) padded.getDouble(0, i, j, k);
-
-        this.original_height = img.getHeight();
-        this.original_width = img.getWidth();
     }
 
     /**
