@@ -5,13 +5,14 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import javax.imageio.ImageIO;
+import java.nio.FloatBuffer;
 
 import ai.onnxruntime.OrtEnvironment;
 import ai.onnxruntime.OrtException;
 
 public class Main {
     public static void main(String[] args) throws OrtException {
-        String imagePath = "/home/caleb/Pictures/example.jpg";
+        String imagePath = "/home/user/Pictures/example.jpg";
         BufferedImage image = null;
 
         try {
@@ -29,6 +30,8 @@ public class Main {
             SamEncoder encoder = new SamEncoder(env, model_path);
             var out = encoder.forward(env, samImage);
             System.out.println(out);
+            var result = out.get(0);
+            float[][][][] value = (float[][][][]) result.getValue(); // 1x256x64x64
         } catch (OrtException e) {
             System.err.println("Error while loading model: " + e.getMessage());
             return;
