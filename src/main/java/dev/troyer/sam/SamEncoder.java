@@ -11,22 +11,22 @@ import ai.onnxruntime.OrtSession;
 class SamEncoder {
     private final OrtSession model;
 
-    private final int image_size;
+    private final int imageSize;
 
     /**
-     * @param model_path Path to the model file
-     * @param image_size Size of the image the encoder model was trained on (usually 1024)
+     * @param modelPath Path to the model file
+     * @param imageSize Size of the image the encoder model was trained on (usually 1024)
      */
-    public SamEncoder(OrtEnvironment env, Path model_path, int image_size) throws OrtException {
-        this.image_size = image_size;
-        this.model = env.createSession(model_path.toString());
+    public SamEncoder(OrtEnvironment env, Path modelPath, int imageSize) throws OrtException {
+        this.imageSize = imageSize;
+        this.model = env.createSession(modelPath.toString());
     }
 
     /**
-     * @param model_path Path to the model file
+     * @param modelPath Path to the model file
      */
-    public SamEncoder(OrtEnvironment env, Path model_path) throws OrtException {
-        this(env, model_path, 1024);
+    public SamEncoder(OrtEnvironment env, Path modelPath) throws OrtException {
+        this(env, modelPath, 1024);
     }
 
     /**

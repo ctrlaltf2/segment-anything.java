@@ -1,19 +1,16 @@
 package dev.troyer.sam;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
 
 import ai.onnxruntime.OnnxTensor;
 import ai.onnxruntime.OrtEnvironment;
 import ai.onnxruntime.OrtException;
 
+import org.nd4j.enums.ImageResizeMethod;
+import org.nd4j.enums.Mode;
 import org.nd4j.linalg.api.buffer.DataType;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
-import org.nd4j.enums.Mode;
-import org.nd4j.enums.ImageResizeMethod;
 
 
 class SamImage {
@@ -102,6 +99,7 @@ class SamImage {
         // and into a double array you go (cursed way because NDArray cannot export 4D matrices apparently)
         data = new float[1][3][1024][1024];
 
+        // TODO: figure out how INDArray stores its elements, access in a CPU cache friendly manner (if that even matters for JVM)
         for (int i = 0; i < 1024; i++)
             for (int j = 0; j < 1024; j++)
                 for (int k = 0; k < 3; k++)
