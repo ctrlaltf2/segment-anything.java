@@ -8,7 +8,8 @@ Eventual goal is to use this in a [JOSM](https://josm.openstreetmap.de/) [plugin
  - [x] Image loading and preprocessing
  - [x] Encoder forward pass
  - [x] OnnxTensor to primitive matrix type conversion
- - [ ] Decoder forward pass, basic coordinate-based prompt
+ - [ ] In progress: Decoder forward pass, basic coordinate-based prompt
  - [ ] Decoder mask post-processing (mapping back to the input image)
  - [ ] Decoder, implement remaining prompt types
  - [ ] Figure out a place to host the ONNX models (~5 GB total)
+ - [ ] GPU runtimes?
