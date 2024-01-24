@@ -23,20 +23,21 @@ class SamImage {
     /**
      * Original height, px
      */
-    public final int original_height;
+    public final int originalHeight;
 
     /**
      * Original width, px
      */
-    public final int original_width;
+    public final int originalWidth;
 
     /**
      * Image from BufferedImage
      */
     public SamImage(BufferedImage img) {
-        this.original_height = img.getHeight();
-        this.original_width = img.getWidth();
+        this.originalHeight = img.getHeight();
+        this.originalWidth = img.getWidth();
 
+        // TODO: Don't hardcode 1024 image size, use detected size from loaded models
         // TODO: support 16-bit images?
         int[] pixels = img.getRGB(0, 0, img.getWidth(), img.getHeight(), null, 0, img.getWidth());
 
@@ -70,7 +71,7 @@ class SamImage {
 
         // Resize proportionally such that longest side is 1024 pixels
         final double scale = 1024.0 / Math.max(img.getWidth(), img.getHeight());
-        final int new_width  = Math.min((int) ( img.getWidth() * scale + 0.5), 1024);
+        final int new_width = Math.min((int) (img.getWidth() * scale + 0.5), 1024);
         final int new_height = Math.min((int) (img.getHeight() * scale + 0.5), 1024);
 
         // why are there literally 5 different ways to resize an image with this library and why are 4 of them wrong
@@ -107,7 +108,7 @@ class SamImage {
     }
 
     /**
-     * Get the data for the image, post transfom and ready for encoding
+     * Get the data for the image, post transform and ready for encoding
      */
     public OnnxTensor asTensor(OrtEnvironment env) throws OrtException {
         return OnnxTensor.createTensor(env, data);
