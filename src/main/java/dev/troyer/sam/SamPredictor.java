@@ -40,24 +40,11 @@ public class SamPredictor {
     /**
      * Constructor
      */
-    public SamPredictor(Path encoderModelPath, Path decoderModelPath) {
+    public SamPredictor(Path encoderModelPath, Path decoderModelPath) throws OrtException {
         env = OrtEnvironment.getEnvironment();
 
-        // Load encoder model
-        try {
-            encoder = new SamEncoder(env, encoderModelPath);
-        } catch (OrtException e) {
-            // TODO: better error handling etc. (aka not just doing this)
-            throw new RuntimeException(e);
-        }
-
-        // Load decoder model
-        try {
-            decoder = new SamDecoder(env, decoderModelPath);
-        } catch (OrtException e) {
-            // TODO: better error handling etc.
-            throw new RuntimeException(e);
-        }
+        encoder = new SamEncoder(env, encoderModelPath);
+        decoder = new SamDecoder(env, decoderModelPath);
 
         // TODO: assert encoder.outputs.image_embeddings.shape == decoder.inputs.embeddings.shape
     }
@@ -75,11 +62,8 @@ public class SamPredictor {
      * @return TBD
      */
     public void predict(float[][] pointCoords, float[] pointLabels, OnnxTensor maskInput, boolean hasMaskInput, int[] originalImageSize) throws OrtException {
+        // TODO: Move this to decoder
         // Prep native parameters to be parameters to the model
-        final OnnxTensor pointCoordsParam = OnnxTensor.createTensor(env, pointCoords);
-        final OnnxTensor pointLabelsParam = OnnxTensor.createTensor(env, pointLabels);
-        final OnnxTensor hasMaskInputParam = OnnxTensor.createTensor(env, new float[]{hasMaskInput ? 1.0f : 0.0f});
-
         LinkedHashMap<String, OnnxTensor> inputs = new LinkedHashMap<>();
         inputs.put("image_embeddings", this.imageEmbedding);
         inputs.put("point_coords", OnnxTensor.createTensor(env, pointCoords));
@@ -128,6 +112,7 @@ public class SamPredictor {
                 new float[(int) maskInputShape[0]][(int) maskInputShape[1]][(int) maskInputShape[2]][(int) maskInputShape[3]]
         );
 
+        // TODO: return
         predict(pointCoords, pointLabels, maskInput, false, originalImageSize);
     }
 
@@ -136,7 +121,7 @@ public class SamPredictor {
      *
      * @param imagePath Path to the image. Isn't validated or anything, assumes it's an image
      */
-    public void setImageFromPath(Path imagePath) throws IOException {
+    public void setImageFromPath(Path imagePath) throws IOException, OrtException {
         // TODO: Error handling
         image = new SamImage(ImageIO.read(new File(imagePath.toString())));
         onImageUpdate();
@@ -145,14 +130,9 @@ public class SamPredictor {
     /**
      * Should run when this->image updates. Re-encodes the image for efficient prompting later.
      */
-    private void onImageUpdate() {
-        try {
-            // TODO: Error handling
-            var forwardResult = encoder.forward(env, image);
-            assert forwardResult.get("image_embeddings").isPresent();
-            imageEmbedding = (OnnxTensor) forwardResult.get("image_embeddings").get();
-        } catch (OrtException e) {
-            throw new RuntimeException(e);
-        }
+    private void onImageUpdate() throws OrtException {
+        var forwardResult = encoder.forward(env, image);
+        assert forwardResult.get("image_embeddings").isPresent();
+        imageEmbedding = (OnnxTensor) forwardResult.get("image_embeddings").get();
     }
 }

@@ -23,15 +23,9 @@ public class SamDecoder {
     /**
      * @return shape of the mask inputs parameter
      */
-    public long[] getMaskInputsShape() {
+    public long[] getMaskInputsShape() throws OrtException {
         // TODO: better error handling, don't assume output with this name exists
-        final Map<String, NodeInfo> inputsInfo;
-        try {
-            inputsInfo = model.getInputInfo();
-        } catch (OrtException e) {
-            throw new RuntimeException(e);
-        }
-
+        final Map<String, NodeInfo> inputsInfo = model.getInputInfo();
         final NodeInfo maskInputNodeInfo = inputsInfo.get("mask_input");
         final TensorInfo maskInputTensorInfo = (TensorInfo) maskInputNodeInfo.getInfo();
         return maskInputTensorInfo.getShape();
