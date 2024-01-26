@@ -50,52 +50,26 @@ public class SamPredictor {
     }
 
     /**
-     * Predict masks for given input prompts.
-     * This is the full set of inputs to the decoder, rarely to be used directly
-     *
-     * @param pointCoords       Nx2 array of point prompts to the model. Each point is in pixel space.
-     * @param pointLabels       Nx1 array of labels for each point in pointCoords. 1 indicates foreground,
-     *                          0 indicates background.
-     * @param maskInput         1x1x256x256 Low res mask input to the model, usually from a previous prediciton iteration.
-     * @param hasMaskInput      true if maskInput is to be used
-     * @param originalImageSize original image dimensions
-     * @return TBD
-     */
-    public void predict(float[][] pointCoords, float[] pointLabels, OnnxTensor maskInput, boolean hasMaskInput, int[] originalImageSize) throws OrtException {
-        // TODO: Move this to decoder
-        // Prep native parameters to be parameters to the model
-        LinkedHashMap<String, OnnxTensor> inputs = new LinkedHashMap<>();
-        inputs.put("image_embeddings", this.imageEmbedding);
-        inputs.put("point_coords", OnnxTensor.createTensor(env, pointCoords));
-        inputs.put("point_labels", OnnxTensor.createTensor(env, pointLabels));
-        inputs.put("mask_input", OnnxTensor.createTensor(env, maskInput));
-        inputs.put("has_mask_input", OnnxTensor.createTensor(env, new float[]{hasMaskInput ? 1.0f : 0.0f}));
-        inputs.put("orig_im_size", OnnxTensor.createTensor(env, originalImageSize));
-
-        // this.model.decoder.run(inputs)
-    }
-
-    /**
      * Main interface, probably the most common use case
      *
      * @param constraints Queries/constraints to the model, given current image
-     * @return TBD
+     * @return Masks, TBD, TBD, in the form of a SamResult
      */
-    public void predict(SamConstraint[] constraints) throws OrtException {
+    public SamResult predict(SamConstraint[] constraints) throws OrtException {
         assert image != null;
 
         // Unpack constraints into form usable by the model
-        float[][] pointCoords = new float[constraints.length][2];
-        float[] pointLabels = new float[constraints.length];
+        float[][][] pointCoords = new float[1][constraints.length][2];
+        float[][] pointLabels = new float[1][constraints.length];
 
         for (int iConstraint = 0; iConstraint < constraints.length; ++iConstraint) {
             SamConstraint thisConstraint = constraints[iConstraint];
 
             // TODO: confirm ordering
-            pointCoords[iConstraint][0] = (float) thisConstraint.x;
-            pointCoords[iConstraint][1] = (float) thisConstraint.y;
+            pointCoords[0][iConstraint][0] = (float) thisConstraint.x;
+            pointCoords[0][iConstraint][1] = (float) thisConstraint.y;
 
-            pointLabels[iConstraint] = (float) thisConstraint.type.ordinal();
+            pointLabels[0][iConstraint] = (float) thisConstraint.type.ordinal();
         }
 
         // TODO: confirm ordering of h/w
@@ -113,7 +87,7 @@ public class SamPredictor {
         );
 
         // TODO: return
-        predict(pointCoords, pointLabels, maskInput, false, originalImageSize);
+        return predict(pointCoords, pointLabels, maskInput, false, originalImageSize);
     }
 
     /**
@@ -125,6 +99,31 @@ public class SamPredictor {
         // TODO: Error handling
         image = new SamImage(ImageIO.read(new File(imagePath.toString())));
         onImageUpdate();
+    }
+
+    /**
+     * Predict masks for given input prompts.
+     * This is the full set of inputs to the decoder, rarely to be used directly
+     *
+     * @param pointCoords       Nx2 array of point prompts to the model. Each point is in pixel space.
+     * @param pointLabels       Nx1 array of labels for each point in pointCoords. 1 indicates foreground,
+     *                          0 indicates background.
+     * @param maskInput         1x1x256x256 Low res mask input to the model, usually from a previous prediciton iteration.
+     * @param hasMaskInput      true if maskInput is to be used
+     * @param originalImageSize original image dimensions
+     * @return Masks, TBD, TBD, in the form of a SamResult
+     */
+    private SamResult predict(float[][][] pointCoords, float[][] pointLabels, OnnxTensor maskInput, boolean hasMaskInput, int[] originalImageSize) throws OrtException {
+        // Prep native parameters to be parameters to the model
+        return this.decoder.forward(
+                env,
+                imageEmbedding,
+                pointCoords,
+                pointLabels,
+                maskInput,
+                hasMaskInput,
+                originalImageSize
+        );
     }
 
     /**

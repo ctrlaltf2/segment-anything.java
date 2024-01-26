@@ -59,13 +59,9 @@ class SamImage {
         }
 
         // Standardize the image (Z-score transform)
-        INDArray mean = img_tensor.mean(0, 1, 2)
-                .reshape(1, 1, 1, 3)
-                .broadcast(1, img.getHeight(), img.getWidth(), 3);
+        INDArray mean = img_tensor.mean(0, 1, 2).reshape(1, 1, 1, 3).broadcast(1, img.getHeight(), img.getWidth(), 3);
 
-        INDArray std = img_tensor.std(0, 1, 2)
-                .reshape(1, 1, 1, 3)
-                .broadcast(1, img.getHeight(), img.getWidth(), 3);
+        INDArray std = img_tensor.std(0, 1, 2).reshape(1, 1, 1, 3).broadcast(1, img.getHeight(), img.getWidth(), 3);
 
         img_tensor.subi(mean).divi(std);
 
@@ -83,11 +79,8 @@ class SamImage {
         final int pad_height = Math.max(1024 - new_height, 0);
 
         // docs were not clear on this __at all__, but it's the start/end padding for each axis, in order of dimension.
-        INDArray padding = Nd4j.createFromArray(new int[][]{
-                {0, 0}, // batch padding
-                {0, pad_height},
-                {0, pad_width},
-                {0, 0} // pad channel
+        INDArray padding = Nd4j.createFromArray(new int[][]{{0, 0}, // batch padding
+                {0, pad_height}, {0, pad_width}, {0, 0} // pad channel
         });
 
         INDArray padded = Nd4j.image.pad(resized, padding, Mode.CONSTANT, 0.0);

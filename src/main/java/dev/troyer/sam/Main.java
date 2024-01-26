@@ -16,7 +16,7 @@ public class Main {
                 Path.of("./test/assets/mingjun-liu-mVWqCdTHfxs-unsplash.jpg")
         );
 
-        predictor.predict(new SamConstraint[]{
+        final SamResult result = predictor.predict(new SamConstraint[]{
                 new SamConstraint(1980, 1200, ConstraintType.FOREGROUND)
         });
     }
